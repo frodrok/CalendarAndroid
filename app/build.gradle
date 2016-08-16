@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'android-apt'
 
 android {
     compileSdkVersion 24
@@ -23,5 +24,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
+
     compile 'io.reactivex:rxjava:1.1.6'
+    compile 'com.jakewharton:butterknife:8.2.1'
+    apt 'com.jakewharton:butterknife-compiler:8.2.1'
+    // https://mvnrepository.com/artifact/com.koushikdutta.ion/ion
+    compile group: 'com.koushikdutta.ion', name: 'ion', version: '2.1.8'
+
 }

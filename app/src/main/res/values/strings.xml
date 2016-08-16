@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">CalendarAndroid</string>
+    <string name="app_name">YHC3LKalender</string>
+    <string name="API_URL">http://83.227.87.14:9000</string>
 </resources>
