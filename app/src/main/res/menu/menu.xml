@@ -4,13 +4,13 @@
 
 <!-- "Mark Favorite", should appear as action button if possible -->
 <item
-    android:id="@+id/action_favorite"
-    android:title="smohta"
+    android:id="@+id/username"
+    android:title="default"
     app:showAsAction="ifRoom"/>
 
 <!-- Settings, should always be in the overflow -->
 <item android:id="@+id/action_settings"
-    android:title="tsåja"
+    android:title="default"
     app:showAsAction="never"/>
 
 </menu>

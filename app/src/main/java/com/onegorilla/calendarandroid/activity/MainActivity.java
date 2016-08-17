@@ -15,6 +15,7 @@ import com.koushikdutta.async.future.Future;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.Response;
 import com.onegorilla.calendarandroid.R;
+import com.onegorilla.calendarandroid.restclient.RestService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,32 +44,16 @@ public class MainActivity extends AppCompatActivity {
     @BindString(R.string.API_URL)
     String API_URL;
 
+    private RestService rest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        List<String> list = Arrays.asList("Android", "Ubuntu", "Mac OS");
-        List<String> list1 = Arrays.asList("Android1", "Ubuntu1", "Mac OS");
-        List<String> list2 = Arrays.asList("Android2", "Ubuntu2", "Mac OS");
-        List<String> list3 = Arrays.asList("Android3", "Ubuntu3", "Mac OS");
-
-        Observable<List<String>> listObservable = Observable.just(list, list1, list2, list3);
-        listObservable.subscribe(new Observer<List<String>>() {
-
-            @Override
-            public void onCompleted() {}
-
-            @Override
-            public void onError(Throwable e) {}
-
-            @Override
-            public void onNext(List<String> list) {
-                Log.d("list", list.toString());
-            }
-        });
-
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        rest = new RestService(API_URL, this);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,13 +67,17 @@ public class MainActivity extends AppCompatActivity {
                 final String localUsername = username.getText().toString();
                 final String localPassword = password.getText().toString();
 
-                verifyLogin(localUsername, localPassword).subscribe(new Action1<Boolean>() {
+                rest.verifyLogin(localUsername, localPassword).subscribe(new Action1<Boolean>() {
                     @Override
                     public void call(Boolean aBoolean) {
                         if (aBoolean) {
 
-                            sendToUserActivity(localUsername);
-
+                            rest.getIdForUser(localUsername).subscribe(new Action1<Long>() {
+                                @Override
+                                public void call(Long aLong) {
+                                    sendToUserActivity(aLong, localUsername);
+                                }
+                            });
 
                         } else {
                             showLoginFailedDialog().show();
@@ -99,12 +88,21 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        autoLogin();
     }
 
-    private void sendToUserActivity(String username) {
+    private void autoLogin() {
+        username.setText("fredrik");
+        password.setText("captainanus");
+        loginButton.callOnClick();
+    }
+
+    private void sendToUserActivity(Long userId, String username) {
         Intent intent = new Intent(this, UserActivity.class);
-        qLog("sending" + username + "to useractivity");
+        intent.putExtra("userid", userId);
         intent.putExtra("username", username);
+        qLog("sending {" + userId + "}: " + username + " to useractivity");
         startActivity(intent);
     }
 
@@ -127,23 +125,5 @@ public class MainActivity extends AppCompatActivity {
         return builder.create();
     }
 
-    private Observable<Boolean> verifyLogin(final String username, final String password) {
-        JsonObject obj = new JsonObject();
-        obj.addProperty("username", username);
-        obj.addProperty("password", password);
 
-        String requestTo = API_URL + "/validateuser";
-
-        Future<Response<String>> ionFuture = Ion.with(this).load("GET", requestTo)
-                .setJsonObjectBody(obj)
-                .asString()
-                .withResponse();
-
-        return Observable.from(ionFuture).map(new Func1<Response<String>, Boolean>() {
-            @Override
-            public Boolean call(Response<String> stringResponse) {
-                return stringResponse.getHeaders().code() == 200;
-            }
-        });
-    }
 }
