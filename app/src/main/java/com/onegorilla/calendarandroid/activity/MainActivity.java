@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // showSpinningProgressNigga();
+                // ninjaSpinningWheelWhileLoading();
 
                 if (API_URL == null) {
                     return;
@@ -89,13 +89,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        autoLogin();
-    }
-
-    private void autoLogin() {
-        username.setText("fredrik");
-        password.setText("captainanus");
-        loginButton.callOnClick();
     }
 
     private void sendToUserActivity(Long userId, String username) {

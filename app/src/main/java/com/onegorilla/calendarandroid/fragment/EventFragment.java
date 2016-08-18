@@ -25,6 +25,7 @@ import static com.onegorilla.calendarandroid.helper.QuickLog.qLog;
 public class EventFragment extends Fragment {
 
     private TextView title;
+    private TextView to;
     private TextView from;
     private TextView color;
 
@@ -35,11 +36,13 @@ public class EventFragment extends Fragment {
 
         title = (TextView) container.findViewById(R.id.title);
         from = (TextView) container.findViewById(R.id.from);
+        to = (TextView) container.findViewById(R.id.to);
         color = (TextView) container.findViewById(R.id.color);
 
         title.setText("");
         from.setText("");
         color.setText("");
+        to.setText("");
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
@@ -47,6 +50,11 @@ public class EventFragment extends Fragment {
     public boolean drawEvent(Event event) {
 
         final Date fromDate = new Date(event.getFrom());
+
+        if (event.getTo() != null) {
+            final Date toDate = new Date(event.getTo());
+            to.setText(toDate.toString());
+        }
 
         title.setText(event.getTitle());
         from.setText(fromDate.toString());

@@ -10,7 +10,8 @@
 
 <!-- Settings, should always be in the overflow -->
 <item android:id="@+id/action_settings"
-    android:title="default"
-    app:showAsAction="never"/>
+    android:title="refresh"
+    app:showAsAction="never"
+    android:onClick="refresh"/>
 
 </menu>

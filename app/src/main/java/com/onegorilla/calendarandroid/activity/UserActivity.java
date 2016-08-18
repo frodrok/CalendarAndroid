@@ -39,6 +39,7 @@ public class UserActivity extends AppCompatActivity {
     private Long userId;
     private RestService rest;
     private Map<Date, Event> dateEventsMap;
+    private CaldroidFragment caldroidFragment;
 
     @BindString(R.string.API_URL)
     String API_URL;
@@ -61,8 +62,7 @@ public class UserActivity extends AppCompatActivity {
 
         final EventFragment eventFragment = new EventFragment();
 
-
-        final CaldroidFragment caldroidFragment = new CaldroidFragment();
+        caldroidFragment = new CaldroidFragment();
         Bundle args = new Bundle();
         Calendar cal = Calendar.getInstance();
         args.putInt(CaldroidFragment.MONTH, cal.get(Calendar.MONTH) + 1);
@@ -94,26 +94,7 @@ public class UserActivity extends AppCompatActivity {
                     }
                 });
 
-        fetchEventsForUser()
-                .doOnError(new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        showNoEventsDialog();
-                    }
-                })
-                .subscribeOn(Schedulers.newThread())
-                .subscribe(new Action1<List<Event>>() {
-                    @Override
-                    public void call(List<Event> events) {
-                        if (events.size() < 1) {
-                            showNoEventsDialog();
-                            return;
-                        }
-
-                        setupCalendar(caldroidFragment, events);
-                    }
-                });
-
+        refreshNotOnClick();
     }
 
     private void setupCalendar(CaldroidFragment caldroidFragment, List<Event> events) {
@@ -137,6 +118,7 @@ public class UserActivity extends AppCompatActivity {
         for (Map.Entry<Date, Event> entry : dateEventsMap.entrySet()) {
             Date date = entry.getKey();
             String compare = dateToString(date);
+
             if (checkerino.equals(compare)) {
                 return entry.getValue();
             }
@@ -181,5 +163,32 @@ public class UserActivity extends AppCompatActivity {
         menuUsername.setTitle(username);
 
         return true;
+    }
+
+    private void refreshNotOnClick() {
+            fetchEventsForUser()
+                    .doOnError(new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            showNoEventsDialog();
+                        }
+                    })
+                    .subscribeOn(Schedulers.newThread())
+                    .subscribe(new Action1<List<Event>>() {
+                        @Override
+                        public void call(List<Event> events) {
+                            if (events.size() < 1) {
+                                showNoEventsDialog();
+                                return;
+                            }
+
+                            setupCalendar(caldroidFragment, events);
+                        }
+                    });
+
+    }
+
+    public void refresh(MenuItem menuItem) {
+        refreshNotOnClick();
     }
 }
